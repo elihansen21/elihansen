@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crumbl Cookie Personality Quiz</title>
+    <link rel="stylesheet" href="../Styles/main.css">
+    <style>
+        .quiz-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+            color: #343a40;
+        }
+
+        .question {
+            margin-bottom: 20px;
+        }
+
+        .answers {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .answers button {
+            background-color: #e7d2cc;
+            color: #212529;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+
+        .answers button:hover {
+            background-color: #d6b1a5;
+        }
+
+        .result {
+            background-color: #f8f1ed;
+            border: 2px dashed #b08968;
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .retake button {
+            background-color: #a36b4f;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        .retake button:hover {
+            background-color: #7a4f3c;
+        }
+
+        @media (max-width: 600px) {
+            .answers {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .answers button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="../index.html">Home</a>
+        <a href="Biography.html">Biography</a>
+        <a href="Family%20life.html">Family Life</a>
+        <a href="Resume.html">Résumé</a>
+        <a href="CookieQuiz.html">Cookie Quiz</a>
+    </div>
+
+    <div class="quiz-container">
+        <h1>Crumbl Cookie Personality Quiz</h1>
+        <p style="text-align:center;">Answer 5 fun questions to find out what Crumbl cookie you really are!</p>
+
+        <div id="quiz"></div>
+
+        <div class="result hidden" id="result">
+            <h3 id="cookie-result"></h3>
+            <!-- 🎯 ADD COOKIE IMAGE HERE -->
+            <!-- Example: <img src="Images/cookie1.jpg" alt="Milk Chocolate Chip Cookie" style="max-width: 300px;"> -->
+            <div class="retake">
+                <button onclick="startQuiz()">Retake Quiz</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const questions = [
+        {
+            q: "How do you spend your ideal weekend?",
+            a: ["Relaxing with Netflix", "Catching up with old friends", "Trying something new", "Road trip to nowhere"],
+            type: [1, 2, 3, 4]
+        },
+        {
+            q: "What’s your go-to drink?",
+            a: ["Milk", "Lemonade", "Bubble tea", "Spicy soda combo"],
+            type: [1, 2, 3, 5]
+        },
+        {
+            q: "Pick a movie genre:",
+            a: ["Rom-com", "Documentary", "Animated", "Fantasy adventure"],
+            type: [2, 1, 3, 5]
+        },
+        {
+            q: "How would your friends describe you?",
+            a: ["Chill", "Cautious", "Creative", "Unpredictable"],
+            type: [1, 2, 3, 4]
+        },
+        {
+            q: "Choose a vacation spot:",
+            a: ["Home sweet home", "A cozy cabin", "Tokyo streets", "Desert dunes at night"],
+            type: [2, 1, 3, 5]
+        }
+    ];
+
+    const outcomes = {
+        1: { name: "Milk Chocolate Chip Cookie", desc: "You're the classic favorite. Simple, steady, and loved by everyone!" },
+        2: { name: "Classic Pink Frosted Sugar Cookie", desc: "You play it safe, but there's charm in your consistency." },
+        3: { name: "Cookie Dough Cookie", desc: "You’re quirky and full of surprises. People love your fun energy!" },
+        4: { name: "Brownie Batter Cookie", desc: "You’re a little different and rich with personality." },
+        5: { name: "Churro Cookie", desc: "You match my personal favorite! Bold, sweet, and full of flair." }
+    };
+
+
+    let score = {};
+    let currentQuestion = 0;
+
+    function startQuiz() {
+        score = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
+        currentQuestion = 0;
+        document.getElementById("result").classList.add("hidden");
+        document.getElementById("cookie-result").innerHTML = "";
+        document.getElementById("quiz").innerHTML = "";
+        showQuestion();
+    }
+
+
+    function showQuestion() {
+        const q = questions[currentQuestion];
+        const quizDiv = document.getElementById("quiz");
+        quizDiv.innerHTML = `
+            <div class="question">
+                <h3>${q.q}</h3>
+                <div class="answers">
+                    ${q.a.map((ans, i) => `<button onclick="selectAnswer(${q.type[i]})">${ans}</button>`).join("")}
+                </div>
+            </div>
+        `;
+    }
+
+    function selectAnswer(type) {
+        score[type]++;
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+            showQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        let maxScore = 0;
+        let resultType = 1;
+        for (let type in score) {
+            if (score[type] > maxScore) {
+                maxScore = score[type];
+                resultType = type;
+            }
+        }
+
+        const resultData = outcomes[resultType];
+        const imageName = resultData.name + ".jpg";
+        const imagePath = "../Pictures/" + imageName;
+
+        document.getElementById("cookie-result").innerHTML = `
+            <strong>${resultData.name}</strong><br>${resultData.desc}<br><br>
+            <img src="${imagePath}" alt="${resultData.name}" style="max-width:300px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+        `;
+        document.getElementById("result").classList.remove("hidden");
+        document.getElementById("quiz").innerHTML = "";
+    }
+
+
+    startQuiz();
+    </script>
+    
+        <footer class="site-footer">
+            <p>&copy; 2025 Eli Hansen</p>
+        </footer>
+    
+</body>
+</html>
